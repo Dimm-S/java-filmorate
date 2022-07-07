@@ -52,9 +52,21 @@ public class FilmController {
             log.debug("Неверный id {}", film.getId());
             throw new ValidationException("Не существует фильма с таким id");
         }
-        if (!films.get(film.getId()).getName().equals(film.getName())) {
-            log.debug("Невеное название {}", film.getName());
-            throw new ValidationException("Неверное наименование фильма");
+        if (film.getName().isBlank()) {
+            log.debug("Отсутствует наименование фильма");
+            throw new ValidationException("Отсутствует наименование фильма");
+        }
+        if (film.getDescription().length() > 200) {
+            log.debug("Слишком длинное описание");
+            throw new ValidationException("Слишком длинное описание");
+        }
+        if (film.getReleaseDate().isBefore(RELEASE_DATE_LIMIT)) {
+            log.debug("Неверная дата {}", film.getReleaseDate());
+            throw new ValidationException("Неверная дата релиза");
+        }
+        if (film.getDuration() <= 0) {
+            log.debug("Неверная продолжительность {}", film.getDuration());
+            throw new ValidationException("Неверная продолжительность фильма");
         }
         films.replace(film.getId(), film);
         return film;

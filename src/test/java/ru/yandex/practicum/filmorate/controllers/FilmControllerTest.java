@@ -67,23 +67,6 @@ class FilmControllerTest {
     }
 
     @Test
-    void updateFilmWithWrongNameTest() {
-        final FilmController controller = new FilmController();
-        final Film film = new Film();
-        film.setName("name");
-        film.setDescription("Sex, drugs and rock'n'roll");
-        film.setReleaseDate(LocalDate.of(2005, 9, 15));
-        film.setDuration(360);
-        controller.addFilm(film);
-        final Film filmUpdater = new Film();
-        filmUpdater.setId(1);
-        filmUpdater.setName("Very good film");
-        filmUpdater.setDescription("Sex, drugs and rock'n'roll");
-        filmUpdater.setReleaseDate(LocalDate.of(2005, 9, 15));
-        assertThrows(RuntimeException.class, () -> controller.updateFilm(filmUpdater));
-    }
-
-    @Test
     void updateFilmTest() {
         final FilmController controller = new FilmController();
         final Film film = new Film();

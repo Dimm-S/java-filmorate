@@ -46,9 +46,13 @@ public class UserController {
             log.debug("Неверный id {}", user.getId());
             throw new ValidationException("Не существует пользователя с таким id");
         }
-        if (!users.get(user.getId()).getLogin().equals(user.getLogin())) {
-            log.debug("Неверный логин {}", user.getLogin());
-            throw new ValidationException("Неверный логин");
+        if (!user.getEmail().contains("@")) {
+            log.debug("Неверный формат емейла {}", user.getEmail());
+            throw new ValidationException("Неверный формат емейла");
+        }
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            log.debug("Неверная дата {}", user.getBirthday());
+            throw new ValidationException("Неверная дата");
         }
         users.replace(user.getId(), user);
         return user;
