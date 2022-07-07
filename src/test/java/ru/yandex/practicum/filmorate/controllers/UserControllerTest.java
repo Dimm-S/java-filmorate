@@ -53,6 +53,24 @@ class UserControllerTest {
     }
 
     @Test
+    void updateUserWithWrongLoginTest() {
+        final UserController controller = new UserController();
+        final User user = new User();
+        user.setEmail("mail@yandex.ru");
+        user.setLogin("login");
+        user.setName("name");
+        user.setBirthday(LocalDate.of(2020, 12, 20));
+        controller.addUser(user);
+        final User userUpdater = new User();
+        userUpdater.setId(1);
+        userUpdater.setEmail("mail@yandex.ru");
+        userUpdater.setLogin("wrongLogin");
+        userUpdater.setName("secondName");
+        userUpdater.setBirthday(LocalDate.of(2020, 12, 20));
+        assertThrows(RuntimeException.class, () -> controller.updateUser(userUpdater));
+    }
+
+    @Test
     void updateUserTest() {
         final UserController controller = new UserController();
         final User user = new User();

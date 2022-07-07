@@ -12,6 +12,7 @@ import java.util.HashMap;
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
+    private final LocalDate RELEASE_DATE_LIMIT = LocalDate.of(1895, 12, 28);
     private final HashMap<Integer, Film> films = new HashMap<>();
     private int newId = 0;
 
@@ -31,12 +32,12 @@ public class FilmController {
             log.debug("Слишком длинное описание");
             throw new ValidationException("Слишком длинное описание");
         }
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            log.debug("Неверная дата");
+        if (film.getReleaseDate().isBefore(RELEASE_DATE_LIMIT)) {
+            log.debug("Неверная дата {}", film.getReleaseDate());
             throw new ValidationException("Неверная дата релиза");
         }
         if (film.getDuration() <= 0) {
-            log.debug("Неверная продолжительность");
+            log.debug("Неверная продолжительность {}", film.getDuration());
             throw new ValidationException("Неверная продолжительность фильма");
         }
         film.setId(generateId());
@@ -48,8 +49,12 @@ public class FilmController {
     public Film updateFilm(@RequestBody Film film) {
         log.info("Получен запрос на изменение фильма");
         if (!films.containsKey(film.getId())) {
-            log.debug("Неверный id");
+            log.debug("Неверный id {}", film.getId());
             throw new ValidationException("Не существует фильма с таким id");
+        }
+        if (!films.get(film.getId()).getName().equals(film.getName())) {
+            log.debug("Невеное название {}", film.getName());
+            throw new ValidationException("Неверное наименование фильма");
         }
         films.replace(film.getId(), film);
         return film;

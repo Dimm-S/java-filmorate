@@ -24,11 +24,11 @@ public class UserController {
     public User addUser(@RequestBody User user) {
         log.info("Получен запрос на добавление пользователя");
         if (!user.getEmail().contains("@")) {
-            log.debug("Неверный формат емейла");
+            log.debug("Неверный формат емейла {}", user.getEmail());
             throw new ValidationException("Неверный формат емейла");
         }
         if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.debug("Неверная дата");
+            log.debug("Неверная дата {}", user.getBirthday());
             throw new ValidationException("Неверная дата");
         }
         if (user.getName() == null || user.getName().isBlank()) {
@@ -43,8 +43,12 @@ public class UserController {
     public User updateUser(@RequestBody User user) {
         log.info("Получен запрос на изменение пользователя");
         if (!users.containsKey(user.getId())) {
-            log.debug("Неверный id");
+            log.debug("Неверный id {}", user.getId());
             throw new ValidationException("Не существует пользователя с таким id");
+        }
+        if (!users.get(user.getId()).getLogin().equals(user.getLogin())) {
+            log.debug("Неверный логин {}", user.getLogin());
+            throw new ValidationException("Неверный логин");
         }
         users.replace(user.getId(), user);
         return user;
