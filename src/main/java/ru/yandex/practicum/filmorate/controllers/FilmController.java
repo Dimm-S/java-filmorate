@@ -12,7 +12,7 @@ import java.util.HashMap;
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
-    private final LocalDate RELEASE_DATE_LIMIT = LocalDate.of(1895, 12, 28);
+    private static final LocalDate RELEASE_DATE_LIMIT = LocalDate.of(1895, 12, 28);
     private final HashMap<Integer, Film> films = new HashMap<>();
     private int newId = 0;
 
