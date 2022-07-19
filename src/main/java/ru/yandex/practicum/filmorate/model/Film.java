@@ -11,4 +11,15 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private int duration;
+    private int likes = 0;
+
+    public void addLike() {
+        this.likes++;
+    }
+
+    public void removeLike() {
+        if (likes > 0) {
+            this.likes--;
+        }
+    }
 }
