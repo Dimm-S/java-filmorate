@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.storage;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.stream.Stream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,14 +70,6 @@ public class InMemoryUserStorage implements UserStorage {
     public void removeFriend(Integer id, Integer friendId) {
         users.get(id).removeFriend(friendId);
         users.get(friendId).removeFriend(id);
-    }
-
-    public void addLike(Integer id, Integer userId) {
-        users.get(userId).addLike(id);
-    }
-
-    public void removeLike(Integer id, Integer userId) {
-        users.get(userId).removeLike(id);
     }
 
     private int generateId() {

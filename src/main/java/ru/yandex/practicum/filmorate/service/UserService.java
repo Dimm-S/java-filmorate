@@ -61,14 +61,6 @@ public class UserService {
         inMemoryUserStorage.removeFriend(id, friendId);
     }
 
-    public void addLike(Integer id, Integer userId) {
-       inMemoryUserStorage.addLike(id, userId);
-    }
-
-    public void removeLike(Integer id, Integer userId) {
-        inMemoryUserStorage.removeLike(id, userId);
-    }
-
     public void validate(User user) {
         if (!user.getEmail().contains("@")) {
             log.debug("Неверный формат емейла {}", user.getEmail());

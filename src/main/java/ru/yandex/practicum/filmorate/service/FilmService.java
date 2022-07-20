@@ -47,12 +47,12 @@ public class FilmService {
         return inMemoryFilmStorage.getPopularFilms(count);
     }
 
-    public void addLike(Integer id) {
-        inMemoryFilmStorage.addLike(id);
+    public void addLike(Integer id, Integer userId) {
+        inMemoryFilmStorage.addLike(id, userId);
     }
 
-    public void removeLike(Integer id) {
-        inMemoryFilmStorage.removeLike(id);
+    public void removeLike(Integer id, Integer userId) {
+        inMemoryFilmStorage.removeLike(id, userId);
     }
 
     public void validate(Film film) {

@@ -50,15 +50,13 @@ public class FilmController {
 
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
-        filmService.addLike(id);
-        userService.addLike(id, userId);
+        filmService.addLike(id, userId);
     }
 
     @DeleteMapping("{id}/like/{userId}")
     public void removeLike(@PathVariable Integer id, @PathVariable Integer userId) {
         filmService.checkUserId(userId);
-        filmService.removeLike(id);
-        userService.removeLike(id, userId);
+        filmService.removeLike(id, userId);
     }
 
     @GetMapping("/{id}")

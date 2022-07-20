@@ -14,7 +14,6 @@ public class User {
     private String name;
     private LocalDate birthday;
     private Set<Integer> friends = new HashSet<>();
-    private Set<Integer> likedFilms = new HashSet<>();
 
     public void addFriend(Integer id) {
         friends.add(id);
@@ -22,13 +21,5 @@ public class User {
 
     public void removeFriend(Integer id) {
         friends.remove(id);
-    }
-
-    public void addLike(Integer id) {
-        this.likedFilms.add(id);
-    }
-
-    public void removeLike(Integer id) {
-        this.likedFilms.remove(id);
     }
 }

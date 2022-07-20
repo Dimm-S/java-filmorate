@@ -15,6 +15,4 @@ public interface UserStorage {
     Set<User> getMutualFriends(Integer id, Integer otherId);
     void addFriend(Integer id, Integer friendId);
     void removeFriend(Integer id, Integer friendId);
-    void addLike(Integer id, Integer userId);
-    void removeLike(Integer id, Integer userId);
 }
