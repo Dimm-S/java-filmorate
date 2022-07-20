@@ -31,7 +31,8 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     public Set<Film> getPopularFilms(int count) {
         List<Film> filmsList = new ArrayList<>(films.values());
-        TreeSet<Film> popularFilms = new TreeSet<>(Comparator.comparing(Film::getId).thenComparing(Film::getLikes).reversed());
+        TreeSet<Film> popularFilms = new TreeSet<>(Comparator.comparing(Film::getId)
+                .thenComparing(Film::getLikes).reversed());
         popularFilms.addAll(filmsList);
         while (popularFilms.size() > count) {
             popularFilms.pollLast();

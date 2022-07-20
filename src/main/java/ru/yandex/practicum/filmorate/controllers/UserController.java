@@ -35,7 +35,7 @@ public class UserController {
         if (user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        validate(user);
+        userService.validate(user);
         userService.addUser(user);
         return user;
     }
@@ -43,62 +43,43 @@ public class UserController {
     @PutMapping
     public User updateUser(@RequestBody User user) {
         log.info("Получен запрос на изменение пользователя");
-        checkId(user.getId());
-        validate(user);
+        userService.checkId(user.getId());
+        userService.validate(user);
         userService.updateUser(user);
         return user;
     }
 
     @GetMapping("/{id}")
     public User getUser(@PathVariable Integer id) {
-        checkId(id);
+        userService.checkId(id);
         return userService.getUser(id);
     }
 
     @GetMapping("/{id}/friends")
     public Set<User> getAllFriendsByUserId(@PathVariable Integer id) {
         log.info("Получен запрос на отображения списка друзей");
-        checkId(id);
+        userService.checkId(id);
         return userService.getAllFriendsByUserId(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public Set<User> getMutualFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
-        checkId(id);
-        checkId(otherId);
+        userService.checkId(id);
+        userService.checkId(otherId);
         return userService.getMutualFriends(id, otherId);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
-        checkId(id);
-        checkId(friendId);
+        userService.checkId(id);
+        userService.checkId(friendId);
         userService.addFriend(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void removeFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
-        checkId(id);
-        checkId(friendId);
+        userService.checkId(id);
+        userService.checkId(friendId);
         userService.removeFriend(id, friendId);
-    }
-
-
-    private void validate(User user) {
-        if (!user.getEmail().contains("@")) {
-            log.debug("Неверный формат емейла {}", user.getEmail());
-            throw new ValidationException("Неверный формат емейла");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.debug("Неверная дата {}", user.getBirthday());
-            throw new ValidationException("Неверная дата");
-        }
-    }
-
-    private void checkId(Integer id) {
-        if (!userService.checkUsrById(id)) {
-            log.debug("Неверный id {}", id);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Не существует пользователя с таким id");
-        }
     }
 }
