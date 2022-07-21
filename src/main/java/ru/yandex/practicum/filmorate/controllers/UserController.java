@@ -1,67 +1,67 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import java.time.LocalDate;
+import ru.yandex.practicum.filmorate.service.UserService;
+
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
 @Slf4j
 public class UserController {
-    private final HashMap<Integer, User> users = new HashMap<>();
-    private int newId = 0;
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public Collection<User> getUsers() {
-        return users.values();
+        return userService.getUsers();
     }
 
     @PostMapping
     public User addUser(@RequestBody User user) {
         log.info("Получен запрос на добавление пользователя");
-        if (!user.getEmail().contains("@")) {
-            log.debug("Неверный формат емейла {}", user.getEmail());
-            throw new ValidationException("Неверный формат емейла");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.debug("Неверная дата {}", user.getBirthday());
-            throw new ValidationException("Неверная дата");
-        }
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-        user.setId(generateId());
-        users.put(user.getId(), user);
+        userService.addUser(user);
         return user;
     }
 
     @PutMapping
     public User updateUser(@RequestBody User user) {
         log.info("Получен запрос на изменение пользователя");
-        if (!users.containsKey(user.getId())) {
-            log.debug("Неверный id {}", user.getId());
-            throw new ValidationException("Не существует пользователя с таким id");
-        }
-        if (!user.getEmail().contains("@")) {
-            log.debug("Неверный формат емейла {}", user.getEmail());
-            throw new ValidationException("Неверный формат емейла");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.debug("Неверная дата {}", user.getBirthday());
-            throw new ValidationException("Неверная дата");
-        }
-        users.replace(user.getId(), user);
+        userService.updateUser(user);
         return user;
     }
 
-    public User getUser(Integer id){
-        return users.get(id);
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable Integer id) {
+        return userService.getUser(id);
     }
-    private int generateId() {
-        return ++newId;
+
+    @GetMapping("/{id}/friends")
+    public Set<User> getAllFriendsByUserId(@PathVariable Integer id) {
+        log.info("Получен запрос на отображения списка друзей");
+        return userService.getAllFriendsByUserId(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public Set<User> getMutualFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+        return userService.getMutualFriends(id, otherId);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+        userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void removeFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+        userService.removeFriend(id, friendId);
     }
 }
