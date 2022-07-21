@@ -8,6 +8,7 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -18,10 +19,12 @@ import java.util.Set;
 public class FilmService {
     private static final LocalDate RELEASE_DATE_LIMIT = LocalDate.of(1895, 12, 28);
     private final InMemoryFilmStorage inMemoryFilmStorage;
+    private final InMemoryUserStorage inMemoryUserStorage;
 
     @Autowired
-    public FilmService(InMemoryFilmStorage inMemoryFilmStorage) {
+    public FilmService(InMemoryFilmStorage inMemoryFilmStorage, InMemoryUserStorage inMemoryUserStorage) {
         this.inMemoryFilmStorage = inMemoryFilmStorage;
+        this.inMemoryUserStorage = inMemoryUserStorage;
     }
 
     public Collection<Film> getFilms() {
@@ -30,16 +33,20 @@ public class FilmService {
 
 
     public Film addFilm(Film film) {
+        validate(film);
         inMemoryFilmStorage.addFilm(film);
         return film;
     }
 
     public Film updateFilm(Film film) {
+        checkFilmById(film.getId());
+        validate(film);
         inMemoryFilmStorage.updateFilm(film);
         return film;
     }
 
     public Film getFilm(Integer id) {
+        checkFilmById(id);
         return inMemoryFilmStorage.getFilm(id);
     }
 
@@ -52,10 +59,12 @@ public class FilmService {
     }
 
     public void removeLike(Integer id, Integer userId) {
+        checkFilmById(id);
+        checkUserId(userId);
         inMemoryFilmStorage.removeLike(id, userId);
     }
 
-    public void validate(Film film) {
+    private void validate(Film film) {
         if (film.getName().isBlank()) {
             throw new ValidationException("Отсутствует наименование фильма");
         }
@@ -70,16 +79,15 @@ public class FilmService {
         }
     }
 
-    public void checkId(Integer id) {
+    private void checkFilmById(Integer id) {
         if (!inMemoryFilmStorage.checkFilmById(id)) {
             log.debug("Неверный id фильма {}", id);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Не существует фильма с таким id");
         }
-
     }
 
-    public void checkUserId(Integer id) {
-        if (!inMemoryFilmStorage.checkFilmById(id)) {
+    private void checkUserId(Integer id) {
+        if (!inMemoryUserStorage.checkUserById(id)) {
             log.debug("Неверный id пользователя {}", id);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }

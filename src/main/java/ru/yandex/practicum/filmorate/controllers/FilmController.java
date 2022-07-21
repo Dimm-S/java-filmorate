@@ -28,7 +28,6 @@ public class FilmController {
     @PostMapping
     public Film addFilm(@RequestBody Film film) {
         log.info("Получен запрос на добавление фильма");
-        filmService.validate(film);
         filmService.addFilm(film);
         return film;
     }
@@ -36,8 +35,6 @@ public class FilmController {
     @PutMapping
     public Film updateFilm(@RequestBody Film film) {
         log.info("Получен запрос на изменение фильма");
-        filmService.checkId(film.getId());
-        filmService.validate(film);
         filmService.updateFilm(film);
         return film;
     }
@@ -49,14 +46,12 @@ public class FilmController {
 
     @DeleteMapping("{id}/like/{userId}")
     public void removeLike(@PathVariable Integer id, @PathVariable Integer userId) {
-        filmService.checkUserId(userId);
         filmService.removeLike(id, userId);
     }
 
     @GetMapping("/{id}")
     public Film getFilm(@PathVariable Integer id) {
         log.info("Запрос фильма {}", id);
-        filmService.checkId(id);
         return filmService.getFilm(id);
     }
 

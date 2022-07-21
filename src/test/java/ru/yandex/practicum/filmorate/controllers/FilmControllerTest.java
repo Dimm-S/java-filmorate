@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.controllers;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
@@ -14,7 +13,7 @@ class FilmControllerTest {
 
     @Test
     void addFilmWithEmptyNameTest() {
-        final FilmController controller = new FilmController(new FilmService(new InMemoryFilmStorage()));
+        final FilmController controller = new FilmController(new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
         final Film film = new Film();
         film.setDescription("Sex, drugs and rock'n'roll");
         film.setReleaseDate(LocalDate.of(2005, 9, 15));
@@ -24,7 +23,7 @@ class FilmControllerTest {
 
     @Test
     void addFilmWithTooLongDescriptionNameTest() {
-        final FilmController controller = new FilmController(new FilmService(new InMemoryFilmStorage()));
+        final FilmController controller = new FilmController(new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
         final Film film = new Film();
         film.setName("name");
         film.setDescription("sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss" +
@@ -39,7 +38,7 @@ class FilmControllerTest {
 
     @Test
     void addFilmWithWrongDateTest() {
-        final FilmController controller = new FilmController(new FilmService(new InMemoryFilmStorage()));
+        final FilmController controller = new FilmController(new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
         final Film film = new Film();
         film.setName("name");
         film.setDescription("Sex, drugs and rock'n'roll");
@@ -50,7 +49,7 @@ class FilmControllerTest {
 
     @Test
     void addFilmWithWrongDurationTest() {
-        final FilmController controller = new FilmController(new FilmService(new InMemoryFilmStorage()));
+        final FilmController controller = new FilmController(new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
         final Film film = new Film();
         film.setName("name");
         film.setDescription("Sex, drugs and rock'n'roll");
@@ -61,7 +60,7 @@ class FilmControllerTest {
 
     @Test
     void updateFilmWithWrongIdTest() {
-        final FilmController controller = new FilmController(new FilmService(new InMemoryFilmStorage()));
+        final FilmController controller = new FilmController(new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
         final Film film = new Film();
         film.setId(2);
         film.setName("name");
@@ -73,7 +72,7 @@ class FilmControllerTest {
 
     @Test
     void updateFilmTest() {
-        final FilmController controller = new FilmController(new FilmService(new InMemoryFilmStorage()));
+        final FilmController controller = new FilmController(new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
         final Film film = new Film();
         film.setName("Very good film");
         film.setDescription("Sex, drugs and rock'n'roll");

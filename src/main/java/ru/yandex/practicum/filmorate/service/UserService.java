@@ -28,40 +28,50 @@ public class UserService {
     }
 
     public User addUser(User user) {
+        if (user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+        validate(user);
         inMemoryUserStorage.addUser(user);
         return user;
     }
 
     public User updateUser(User user) {
+        checkId(user.getId());
+        validate(user);
         inMemoryUserStorage.updateUser(user);
         return user;
     }
 
     public User getUser(Integer id) {
+        checkId(id);
         return inMemoryUserStorage.getUser(id);
     }
 
-    public boolean checkUsrById (Integer id) {
-        return inMemoryUserStorage.checkUserById(id);
-    }
-
     public Set<User> getAllFriendsByUserId (Integer id) {
+        checkId(id);
         return inMemoryUserStorage.getAllFriendsByUserId(id);
     }
 
     public Set<User> getMutualFriends(Integer id, Integer otherId) {
+        checkId(id);
+        checkId(otherId);
         return inMemoryUserStorage.getMutualFriends(id, otherId);
     }
 
     public void addFriend(Integer id, Integer friendId) {
+        checkId(id);
+        checkId(friendId);
         inMemoryUserStorage.addFriend(id, friendId);
     }
 
     public void removeFriend(Integer id, Integer friendId) {
+        checkId(id);
+        checkId(friendId);
         inMemoryUserStorage.removeFriend(id, friendId);
     }
 
-    public void validate(User user) {
+    private void validate(User user) {
         if (!user.getEmail().contains("@")) {
             log.debug("Неверный формат емейла {}", user.getEmail());
             throw new ValidationException("Неверный формат емейла");
@@ -72,7 +82,7 @@ public class UserService {
         }
     }
 
-    public void checkId(Integer id) {
+    private void checkId(Integer id) {
         if (!inMemoryUserStorage.checkUserById(id)) {
             log.debug("Неверный id {}", id);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Не существует пользователя с таким id");
