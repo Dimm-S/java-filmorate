@@ -28,15 +28,14 @@ public class UserController {
     @PostMapping
     public User addUser(@RequestBody User user) {
         log.info("Получен запрос на добавление пользователя");
-        userService.addUser(user);
-        return user;
+        return userService.addUser(user);
     }
 
     @PutMapping
     public User updateUser(@RequestBody User user) {
         log.info("Получен запрос на изменение пользователя");
-        userService.updateUser(user);
-        return user;
+        return userService.updateUser(user);
+
     }
 
     @GetMapping("/{id}")
