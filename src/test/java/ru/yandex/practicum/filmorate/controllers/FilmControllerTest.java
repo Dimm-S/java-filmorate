@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
@@ -79,6 +80,7 @@ class FilmControllerTest {
         film.setDescription("Sex, drugs and rock'n'roll");
         film.setReleaseDate(LocalDate.of(2005, 9, 15));
         film.setDuration(360);
+        film.setMpa(new Mpa(1, "G"));
         controller.addFilm(film);
         final Film filmUpdater = new Film();
         filmUpdater.setId(1);
