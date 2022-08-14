@@ -20,18 +20,18 @@ public class MpaDbStorage {
 
     public Mpa getMpa(Integer id) {
         final String sqlQuery = "select * from mpaa where mpaa_id = ?";
-        if ((jdbcTemplate.query(sqlQuery, MpaDbStorage::makeMpa, id)).size() == 0) {
+        if ((jdbcTemplate.query(sqlQuery, this::makeMpa, id)).size() == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return jdbcTemplate.queryForObject(sqlQuery, MpaDbStorage::makeMpa, id);
+        return jdbcTemplate.queryForObject(sqlQuery, this::makeMpa, id);
     }
 
     public Collection<Mpa> getAllMpa() {
         final String sqlQuery = "select * from mpaa";
-        return jdbcTemplate.query(sqlQuery, MpaDbStorage::makeMpa);
+        return jdbcTemplate.query(sqlQuery, this::makeMpa);
     }
 
-    private static Mpa makeMpa(ResultSet rs, int rowNum) throws SQLException {
+    private Mpa makeMpa(ResultSet rs, int rowNum) throws SQLException {
         return new Mpa(rs.getInt("mpaa_id"), rs.getString("mpaa_name"));
     }
 }

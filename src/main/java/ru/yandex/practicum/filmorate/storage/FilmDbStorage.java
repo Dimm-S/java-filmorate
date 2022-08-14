@@ -13,7 +13,7 @@ import java.util.*;
 @Component("filmsInDatabase")
 public class FilmDbStorage implements FilmStorage{
 
-    private static JdbcTemplate jdbcTemplate = null;
+    private JdbcTemplate jdbcTemplate;
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -23,7 +23,7 @@ public class FilmDbStorage implements FilmStorage{
     public Collection<Film> getFilms() {
         final String sqlQuery = "select * from films f " +
                 "left join mpaa m on f.mpaa_id = m.mpaa_id ";
-        List<Film> films = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilmFromDatabaseAnswer);
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilmFromDatabaseAnswer);
         return films;
     }
 
@@ -40,10 +40,11 @@ public class FilmDbStorage implements FilmStorage{
         String sqlQueryChk = "select * from films f " +
                 "left join mpaa m on f.mpaa_id = m.mpaa_id " +
                 "where film_name = ?";
-        Film chkdFilm = jdbcTemplate.queryForObject(sqlQueryChk, FilmDbStorage::makeFilmFromDatabaseAnswer, film.getName());
+        Film chkdFilm = jdbcTemplate.queryForObject(sqlQueryChk,
+                this::makeFilmFromDatabaseAnswer, film.getName());
         film.setId(chkdFilm.getId());
         updateFilmGenres(film);
-        return jdbcTemplate.queryForObject(sqlQueryChk, FilmDbStorage::makeFilmFromDatabaseAnswer, film.getName());
+        return jdbcTemplate.queryForObject(sqlQueryChk, this::makeFilmFromDatabaseAnswer, film.getName());
     }
 
     @Override
@@ -64,7 +65,7 @@ public class FilmDbStorage implements FilmStorage{
         String sqlQueryChk = "select * from films f " +
                 "left join mpaa m on f.mpaa_id = m.mpaa_id " +
                 "where FILM_ID = ?";
-        return jdbcTemplate.queryForObject(sqlQueryChk, FilmDbStorage::makeFilmFromDatabaseAnswer, film.getId());
+        return jdbcTemplate.queryForObject(sqlQueryChk, this::makeFilmFromDatabaseAnswer, film.getId());
     }
 
     @Override
@@ -72,7 +73,7 @@ public class FilmDbStorage implements FilmStorage{
         final String sqlQuery = "select * from films f " +
                 "left join mpaa m on f.mpaa_id = m.mpaa_id " +
                 "where f.FILM_ID = ?";
-        return jdbcTemplate.queryForObject(sqlQuery, FilmDbStorage::makeFilmFromDatabaseAnswer, id);
+        return jdbcTemplate.queryForObject(sqlQuery, this::makeFilmFromDatabaseAnswer, id);
 
     }
 
@@ -83,7 +84,7 @@ public class FilmDbStorage implements FilmStorage{
                 "left join films_likes fl on f.film_id = fl.film_id " +
                 "group by f.film_id " +
                 "order by count(fl.user_id) desc limit ?";
-        List<Film> popularFilms = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilmFromDatabaseAnswer, count);
+        List<Film> popularFilms = jdbcTemplate.query(sqlQuery, this::makeFilmFromDatabaseAnswer, count);
         return new HashSet<>(popularFilms);
     }
 
@@ -104,14 +105,14 @@ public class FilmDbStorage implements FilmStorage{
         String sqlQuery = "select * from films f " +
                 "left join mpaa m on f.mpaa_id = m.mpaa_id " +
                 "where f.FILM_ID = ?";
-        List<Film> films = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilmFromDatabaseAnswer, id);
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilmFromDatabaseAnswer, id);
         if (films.size() == 0) {
             return false;
         }
         return true;
     }
 
-    private static Film makeFilmFromDatabaseAnswer(ResultSet rs, int rowNum) throws SQLException {
+    private Film makeFilmFromDatabaseAnswer(ResultSet rs, int rowNum) throws SQLException {
         return new Film(rs.getInt("film_id"),
                 rs.getString("film_name"),
                 rs.getString("description"),
@@ -121,19 +122,19 @@ public class FilmDbStorage implements FilmStorage{
                 getFilmGenres(rs.getInt("film_id")));
     }
 
-    private static Set<Genre> getFilmGenres(int id) {
+    private Set<Genre> getFilmGenres(int id) {
         String sqlQuery = "select * from films f " +
                 "left join FILMS_GENRES FG on f.FILM_ID = FG.FILM_ID " +
                 "left join GENRES G on G.GENRE_ID = FG.GENRE_ID " +
                 "where f.FILM_ID = ?";
-        List<Genre> genres = jdbcTemplate.query(sqlQuery, GenreDbStorage::makeGenre, id);
+        List<Genre> genres = jdbcTemplate.query(sqlQuery, new GenreDbStorage(new JdbcTemplate())::makeGenre, id);
         if (genres.get(0).getId() == 0) {
             return new HashSet<>();
         }
         return new HashSet<>(genres);
     }
 
-    private static void updateFilmGenres(Film film) {
+    private void updateFilmGenres(Film film) {
         Set<Genre> genres = film.getGenres();
         removeAllGenresByFilm(film);
         if (genres != null && genres.size() != 0 && genres.iterator().next().getId() != 0) {
@@ -146,7 +147,7 @@ public class FilmDbStorage implements FilmStorage{
         }
     }
 
-    private static void removeAllGenresByFilm(Film film) {
+    private void removeAllGenresByFilm(Film film) {
         jdbcTemplate.update("delete from films_genres where FILM_ID = ?", film.getId());
     }
 }

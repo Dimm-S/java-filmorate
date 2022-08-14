@@ -20,18 +20,18 @@ public class GenreDbStorage {
 
     public Genre getGenre(Integer id) {
         final String sqlQuery = "select * from genres where genre_id = ?";
-        if ((jdbcTemplate.query(sqlQuery, GenreDbStorage::makeGenre, id)).size() == 0) {
+        if ((jdbcTemplate.query(sqlQuery, this::makeGenre, id)).size() == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return jdbcTemplate.queryForObject(sqlQuery, GenreDbStorage::makeGenre, id);
+        return jdbcTemplate.queryForObject(sqlQuery, this::makeGenre, id);
     }
 
     public Collection<Genre> getAllGenres() {
         final String sqlQuery = "select * from genres order by GENRE_ID asc ";
-        return jdbcTemplate.query(sqlQuery, GenreDbStorage::makeGenre);
+        return jdbcTemplate.query(sqlQuery, this::makeGenre);
     }
 
-    public static Genre makeGenre(ResultSet rs, int rowNum) throws SQLException {
+    public Genre makeGenre(ResultSet rs, int rowNum) throws SQLException {
         return new Genre(rs.getInt("genre_id"), rs.getString("genre_name"));
     }
 }
