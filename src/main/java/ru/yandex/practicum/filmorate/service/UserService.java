@@ -2,12 +2,15 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -16,15 +19,15 @@ import java.util.Set;
 @Service
 @Slf4j
 public class UserService {
-    private final InMemoryUserStorage inMemoryUserStorage;
+    private final UserStorage userStorage;
 
     @Autowired
-    public UserService(InMemoryUserStorage inMemoryUserStorage) {
-        this.inMemoryUserStorage = inMemoryUserStorage;
+    public UserService(@Qualifier("usersInDatabase") UserStorage userStorage) {
+        this.userStorage = userStorage;
     }
 
     public Collection<User> getUsers() {
-        return inMemoryUserStorage.getUsers();
+        return userStorage.getUsers();
     }
 
     public User addUser(User user) {
@@ -32,43 +35,41 @@ public class UserService {
             user.setName(user.getLogin());
         }
         validate(user);
-        inMemoryUserStorage.addUser(user);
-        return user;
+        return userStorage.addUser(user);
     }
 
     public User updateUser(User user) {
         checkId(user.getId());
         validate(user);
-        inMemoryUserStorage.updateUser(user);
-        return user;
+        return userStorage.updateUser(user);
     }
 
     public User getUser(Integer id) {
         checkId(id);
-        return inMemoryUserStorage.getUser(id);
+        return userStorage.getUser(id);
     }
 
     public Set<User> getAllFriendsByUserId (Integer id) {
         checkId(id);
-        return inMemoryUserStorage.getAllFriendsByUserId(id);
+        return userStorage.getAllFriendsByUserId(id);
     }
 
     public Set<User> getMutualFriends(Integer id, Integer otherId) {
         checkId(id);
         checkId(otherId);
-        return inMemoryUserStorage.getMutualFriends(id, otherId);
+        return userStorage.getMutualFriends(id, otherId);
     }
 
     public void addFriend(Integer id, Integer friendId) {
         checkId(id);
         checkId(friendId);
-        inMemoryUserStorage.addFriend(id, friendId);
+        userStorage.addFriend(id, friendId);
     }
 
     public void removeFriend(Integer id, Integer friendId) {
         checkId(id);
         checkId(friendId);
-        inMemoryUserStorage.removeFriend(id, friendId);
+        userStorage.removeFriend(id, friendId);
     }
 
     private void validate(User user) {
@@ -83,7 +84,7 @@ public class UserService {
     }
 
     private void checkId(Integer id) {
-        if (!inMemoryUserStorage.checkUserById(id)) {
+        if (!userStorage.checkUserById(id)) {
             log.debug("Неверный id {}", id);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Не существует пользователя с таким id");
         }
