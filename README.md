@@ -1,4 +1,7 @@
 # java-filmorate
-Template repository for Filmorate project.
 
-/filmorate_database_scheme.jpg
+Бэкенд сервиса для работы с фильмами.
+
+Позволяет вести базу фильмов с описанием, ранжированием, оценками и формировать подборки.
+
+Java 11, Spring Boot 2.7.1, JDBC, Lombok
